@@ -257,4 +257,4 @@ Recall|0.65
 
 ## Collaborators
 
-([Ujjwal Kandel](https://github.com/UjjwalKandel2000), [Reena Koshta](https://github.com/reenakoshta10), and [Aubin](https://github.com/manwithplan))
+[Ujjwal Kandel](https://github.com/UjjwalKandel2000), [Reena Koshta](https://github.com/reenakoshta10), and [Aubin](https://github.com/manwithplan)
