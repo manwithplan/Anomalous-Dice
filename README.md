@@ -8,9 +8,9 @@
   3. [Thresholds](#thresholds)
 3. [Anomaly Detection](#anomaly-detection)
   1. [Numpy Approach](#numpy-approach)
-  2. [Auto Encoder](#AutoEncoder)
-  3. [Auto Encoder with Classifier](#AutoEncoder-with-classifier)
-  4. [Variational Auto Encoder](#VAE)
+  2. [Auto Encoder](#autoencoder)
+  3. [Auto Encoder with Classifier](#autoencoder-with-classifier)
+  4. [Variational Auto Encoder](#variational-auto-encoder)
 4. [Installation](#installation)
 5. [Tech](#tech)
 
@@ -185,7 +185,7 @@ removes noise in the data.
 
 Allthough very useful this was not the usecase we were trying to present. Enter: 
 
-### Variational Auto Encoders.
+### Variational Auto Encoder
 
 The difference is that a VAE assumes that the source data has some sort of underlying probability 
 distribution (such as Gaussian) and then attempts to find the parameters of the distribution. 
