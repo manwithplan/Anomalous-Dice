@@ -1,0 +1,290 @@
+---------------------------
+v2.3x
+---------------------------
+
+variational auto encoder, basic model 
+
+# Create encoder
+encoder = keras.Model(inputs, [z_mean, z_log_sigma, z], name='encoder')
+
+# Create decoder
+latent_inputs = keras.Input(shape=(latent_dim,), name='z_sampling')
+x = layers.Dense(intermediate_dim, activation='relu')(latent_inputs)
+outputs = layers.Dense(original_dim, activation='sigmoid')(x)
+decoder = keras.Model(latent_inputs, outputs, name='decoder')
+
+# instantiate VAE model
+outputs = decoder(encoder(inputs)[2])
+vae = keras.Model(inputs, outputs, name='vae_mlp')
+
+0.7555555555555555,
+0.9691011235955056,
+0.8947368421052632,
+0.6538461538461539
+
+---------------------------
+v1.3x
+---------------------------
+
+Decreasing the size of the bottleneck
+
+# build model
+
+# input size is (128, 128). That means the input is 16.384 floats. In the input below they have an input of 784.
+input_shape = (128, 128, 1)
+
+"""
+# This is the size of our encoded representations
+encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+"""
+
+inputs = tf.keras.Input(shape=(128, 128, 1), name='input_layer')
+
+encoded = tf.keras.layers.Conv2D(32, kernel_size=3, strides= 1, padding='same', name='conv_1')(inputs)
+
+# "encoded" is the encoded representation of the input
+encoded = layers.Dense(64, activation='relu')(encoded)
+
+# "decoded" is the lossy reconstruction of the input
+decoded = layers.Dense(1, activation='sigmoid')(encoded)
+
+outputs = tf.keras.layers.Conv2DTranspose(1, 3, 1,padding='same', activation='sigmoid', name='conv_transpose_4')(decoded)
+
+autoencoder = tf.keras.Model(inputs, outputs)
+optimizer = tf.keras.optimizers.Adam(lr = 0.0005)
+
+autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
+
+autoencoder.summary()
+
+
+history = autoencoder.fit(train_data[:500], train_data[:500],
+                epochs=10,
+                batch_size=10,
+                shuffle=True,
+                validation_data=(val_data[:500], val_data[:500]),
+                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+
+
+# RESULTS
+
+SSIM on unseen test set
+
+f1 = 0.21052631578947367
+Accuracy = 0.5365168539325843
+Precision = 0.12021857923497267
+Recall = 0.8461538461538461
+
+---------------------------
+v0.3
+---------------------------
+
+Testing model very accurately now.
+
+# build model
+
+# input size is (128, 128). That means the input is 16.384 floats. In the input below they have an input of 784.
+input_shape = (128, 128, 1)
+
+"""
+# This is the size of our encoded representations
+encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+"""
+
+inputs = tf.keras.Input(shape=(128, 128, 1), name='input_layer')
+
+encoded = tf.keras.layers.Conv2D(32, kernel_size=3, strides= 1, padding='same', name='conv_1')(inputs)
+
+decoded = tf.keras.layers.Conv2DTranspose(64, 3, strides= 1, padding='same',name='conv_transpose_1')(encoded)
+
+outputs = tf.keras.layers.Conv2DTranspose(1, 3, 1,padding='same', activation='sigmoid', name='conv_transpose_4')(decoded)
+
+autoencoder = tf.keras.Model(inputs, outputs)
+optimizer = tf.keras.optimizers.Adam(lr = 0.0005)
+
+autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
+
+autoencoder.summary()
+
+
+history = autoencoder.fit(train_data[:500], train_data[:500],
+                epochs=10,
+                batch_size=10,
+                shuffle=True,
+                validation_data=(val_data[:500], val_data[:500]),
+                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+
+
+# RESULTS
+
+BCE 
+
+f1 = 0.20814479638009048
+Accuracy = 0.5084269662921348
+Precision = 0.11794871794871795
+Recall = 0.8846153846153846
+
+
+---------------------------
+v0.3
+---------------------------
+
+Training model with SSIMloss in stead of BCE
+
+# build model
+
+# input size is (128, 128). That means the input is 16.384 floats. In the input below they have an input of 784.
+input_shape = (128, 128, 1)
+
+"""
+# This is the size of our encoded representations
+encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+"""
+
+# like the example above we takle encoding dimension as a factor 24
+encoding_dim = 668
+
+# This is our input image
+input_img = keras.Input(shape=input_shape)
+# "encoded" is the encoded representation of the input
+encoded = layers.Dense(encoding_dim, activation='relu')(input_img)
+# "decoded" is the lossy reconstruction of the input
+decoded = layers.Dense(1, activation='sigmoid')(encoded)
+
+# This model maps an input to its reconstruction
+autoencoder = keras.Model(input_img, decoded)
+
+# This model maps an input to its encoded representation
+encoder = keras.Model(input_img, encoded)
+
+# This is our encoded (32-dimensional) input
+encoded_input = keras.Input(shape=(encoding_dim,))
+# Retrieve the last layer of the autoencoder model
+decoder_layer = autoencoder.layers[-1]
+# Create the decoder model
+decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
+
+autoencoder.compile(optimizer='adam', loss=SSIMloss)
+
+history = autoencoder.fit(train_data[:500], train_data[:500],
+                epochs=10,
+                batch_size=10,
+                shuffle=True,
+                validation_data=(val_data[:500], val_data[:500]),
+                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+
+# RESULTS
+
+SSIM 
+
+f1 = 0.7415730337078651
+Accuracy = 0.5892857142857143
+Precision = 1.0
+Recall = 0.5892857142857143
+
+---------------------------
+v0.2.
+---------------------------
+
+# build model
+
+# input size is (128, 128). That means the input is 16.384 floats. In the input below they have an input of 784.
+input_shape = (128, 128, 1)
+
+"""
+# This is the size of our encoded representations
+encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+"""
+
+# like the example above we takle encoding dimension as a factor 24
+encoding_dim = 668
+
+# This is our input image
+input_img = keras.Input(shape=input_shape)
+# "encoded" is the encoded representation of the input
+encoded = layers.Dense(encoding_dim, activation='relu')(input_img)
+# "decoded" is the lossy reconstruction of the input
+decoded = layers.Dense(1, activation='sigmoid')(encoded)
+
+# This model maps an input to its reconstruction
+autoencoder = keras.Model(input_img, decoded)
+
+# This model maps an input to its encoded representation
+encoder = keras.Model(input_img, encoded)
+
+# This is our encoded (32-dimensional) input
+encoded_input = keras.Input(shape=(encoding_dim,))
+# Retrieve the last layer of the autoencoder model
+decoder_layer = autoencoder.layers[-1]
+# Create the decoder model
+decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
+
+autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
+
+history = autoencoder.fit(train_data[:500], train_data[:500],
+                epochs=10,
+                batch_size=10,
+                shuffle=True,
+                validation_data=(val_data[:500], val_data[:500]),
+                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+
+# RESULTS
+
+BCE-loss
+f1 = 0.25
+Accuracy = 0.9518599562363238
+Precision = 0.34375
+Recall = 0.19642857142857142
+
+---------------------------
+v0.1.
+---------------------------
+# build model
+
+# input size is (128, 128). That means the input is 16.384 floats. In the input below they have an input of 784.
+input_shape = (128, 128, 1)
+
+"""
+# This is the size of our encoded representations
+encoding_dim = 32  # 32 floats -> compression of factor 24.5, assuming the input is 784 floats
+"""
+
+# like the example above we takle encoding dimension as a factor 24
+encoding_dim = 668
+
+# This is our input image
+input_img = keras.Input(shape=input_shape)
+# "encoded" is the encoded representation of the input
+encoded = layers.Dense(encoding_dim, activation='relu')(input_img)
+# "decoded" is the lossy reconstruction of the input
+decoded = layers.Dense(1, activation='sigmoid')(encoded)
+
+# This model maps an input to its reconstruction
+autoencoder = keras.Model(input_img, decoded)
+
+# This model maps an input to its encoded representation
+encoder = keras.Model(input_img, encoded)
+
+# This is our encoded (32-dimensional) input
+encoded_input = keras.Input(shape=(encoding_dim,))
+# Retrieve the last layer of the autoencoder model
+decoder_layer = autoencoder.layers[-1]
+# Create the decoder model
+decoder = keras.Model(encoded_input, decoder_layer(encoded_input))
+
+autoencoder.compile(optimizer='adam', loss='binary_crossentropy')
+
+history = autoencoder.fit(train_data, train_data,
+                epochs=2,
+                batch_size=10,
+                shuffle=True,
+                validation_data=(val_data, val_data),
+                callbacks=[TensorBoard(log_dir='/tmp/autoencoder')])
+
+# RESULTS
+
+BCE-loss
+f1 = 0.21978021978021978
+Accuracy = 0.9482129832239241
+Precision = 0.2857142857142857
+Recall = 0.17857142857142858
