@@ -1,4 +1,4 @@
-# anomalious_dice
+# Anomalous Dice
 
 ## Installation
 
