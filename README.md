@@ -60,10 +60,8 @@ In the following examples you can see that the anomalies are sometimes rotated i
 how normal dice are rotated. When comparing these values to the templates, we can immediately recognize a
 number of anomalies without any modeling.
 
-<div align="center">
 ![](visuals/ano3.gif)
 ![](visuals/ano4.gif)
-</div>
 
 ### Thresholds
 
@@ -101,10 +99,12 @@ And MSEloss for this sample falls outside of the boundaries for each category it
 classified as an anomaly.
 
 <div align="center">
+	
 metric|score
 :--------------------------:|:--------------------------:
 f1|0.90 
 Accuracy|0.90 
+	
 </div>
 
 ### AutoEncoder 
@@ -132,12 +132,14 @@ This is how it is regenerating images for orginal and anomalies.
 ![](visuals/ae_only.jpg)
 
 <div align="center">
+	
 metric|score
 :--------------------------:|:--------------------------:
 f1 | 0.21 
 Accuracy | 0.53 
 Precision | 0.12 
 Recall | 0.83 
+	
 </div>
 
 ### AutoEncoder with classifier 
@@ -164,12 +166,14 @@ do not appear in the reconstructed images.
 ![](visuals/ae+C.jpg)
 
 <div align="center">
+	
 metric|score
 :--------------------------:|:--------------------------:
 f1 | 0.46 
 Accuracy | 0.96 
 Precision | 0.57 
 Recall | 0.39 
+	
 </div>
 
 ### Variational Auto Encoder
@@ -221,12 +225,14 @@ far better results. The final model was trained on 200 epochs, but has not been 
 there is still a lot of room for improvement.
 
 <div align="center">
+	
 metric|score
 :--------------------------:|:--------------------------:
 f1|0.75
 Accuracy|0.96
 Precision|0.89
 Recall|0.65
+	
 </div>
 
 ## Installation
